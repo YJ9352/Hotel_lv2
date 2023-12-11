@@ -5,7 +5,7 @@ class BankAccount {
     private val histories = arrayListOf<String>()
 
     init {
-        val initAmount = (100000..500000).random()
+        val initAmount = (10000000..500000000).random()
         inBalance(initAmount, "init")
     }
 

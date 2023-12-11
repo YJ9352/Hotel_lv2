@@ -24,8 +24,8 @@ fun main() {
             if (!infoMenu.isNumeric()) {
                 System.err.println("메뉴 입력은 숫자만 해주세요.")
                 continue
-            } else if (infoMenu != null) {
-                var hotelmain = HotelMain()
+            } else {
+                val hotelmain = HotelMain()
                 hotelmain.hotelMenu(infoMenu.toInt()) // 아래 Int 로 지정하고 짜버려서 변환
             }
         }

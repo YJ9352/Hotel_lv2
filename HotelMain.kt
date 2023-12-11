@@ -4,26 +4,25 @@ import java.time.DateTimeException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
-import kotlin.system.exitProcess
 
 // 이게 체크인 체크아웃 날짜 담는건가??
 fun withInDate(stx: LocalDate, etx: LocalDate, check: LocalDate): Boolean {
     return !check.isBefore(stx) && check.isBefore(etx)
 }
 
-@Suppress("UNREACHABLE_CODE")
+//@Suppress("UNREACHABLE_CODE")
 class HotelMain {
     fun hotelMenu(infoMenu: Int) {
         val dateFormat = DateTimeFormatter.ofPattern("yyyyMMdd")
-        val rsvHistory = arrayListOf<RsvHistory>()
         val customers = arrayListOf<Customer>()
+        val rsvHistory = arrayListOf<RsvHistory>()
 
         when (infoMenu) {
             1 -> {
                 println("${infoMenu}번을 선택하셨습니다")
                 println("호텔 예약을 시작합니다.")
 
-                val randomMoney = (50000..1000000).random() // 랜덤 고객 잔액 설정
+                val randomMoney = (500000..1000000).random() // 랜덤 고객 잔액 설정
 
                 println("예약자 성함을 입력해주세요.")
                 val name = readLine() // 예약자 이름 입력
@@ -51,11 +50,11 @@ class HotelMain {
                     }
                 }
 
-                // 체크인 날짜 지정 , 체크인 날짜를 맞게 입력하면 자꾸 여기로 돌아와서 반복됨 왜?
+                // 여기서 현재날짜 불러오고
                 var checkIn: LocalDate? = null
                 while (true) {
                     println("오늘 날짜는 ${LocalDate.now()} 입니다. 체크인 날짜를 입력해주세요.(yyyyMMdd)")
-                    var checkDate = readLine() // 체크인 날짜 입력
+                    val checkDate = readln() // 체크인 날짜 입력
 
                     try {
                         val temp = LocalDate.from(dateFormat.parse(checkDate))
@@ -82,6 +81,8 @@ class HotelMain {
 
                         if (checkIn == null) {
                             continue
+                        } else {
+                            break
                         }
 
                     } catch (e: DateTimeException) {
@@ -96,7 +97,7 @@ class HotelMain {
                 while (true) {
                     println("예약 날짜는 ${checkIn} 입니다.")
                     println("체크아웃 날짜를 입력해 주세요. (yyyyMMdd)")
-                    var checkDate = readLine() // 체크아웃 날짜 입력
+                    var checkDate = readln() // 체크아웃 날짜 입력
 
                     try {
                         val temp = LocalDate.from(dateFormat.parse(checkDate))
@@ -121,9 +122,8 @@ class HotelMain {
 
                         if (checkOut == null) {
                             continue
-                        } else {
-                            break
                         }
+                        break
 
                     } catch (e: DateTimeParseException) {
                         System.err.println("올바르지 않은 입력입니다.")
@@ -141,7 +141,7 @@ class HotelMain {
 
                 if (customer.money.outBalance(randomMoney, "reserve")) {
                     RsvHistory (
-                        guest = customer,
+                        customer = customer,
                         resvMoney = randomMoney,
                         checkIn = checkIn!!,
                         checkOut = checkOut!!,
@@ -151,32 +151,55 @@ class HotelMain {
                     }
 
                     println("호텔 예약이 완료되었습니다. 감사합니다.")
+                    return main()
                 } else {
                     System.err.println("통장 잔액이 부족합니다. 예약에 실패했습니다.")
+                    return main()
                 }
             }
 
             2 -> {
                 println("========================== 호텔 예약자 명단입니다.==========================")
+                for (i in 0 until rsvHistory.size) {
+                    val item = rsvHistory[i]
+                    println("${i + 1}. 예약자명: ${item.customer.name} | 방번호: ${item.resvRoom} | 체크인: ${item.checkIn} | 체크아웃: ${item.checkOut} ")
+                }
 
             }
 
             3 -> {
-
+                println("========================== 호텔 예약자 명단입니다.(정렬 표기)==========================")
+                val sortedArray = rsvHistory.sortedBy { item -> item.customer.name }
+                for (i in sortedArray.indices) {
+                    val item = sortedArray[i]
+                    println("${i + 1}. 예약자명: ${item.customer.name} | 방번호: ${item.resvRoom} | 체크인: ${item.checkIn} | 체크아웃: ${item.checkOut} ")
+                }
             }
 
             4 -> {
                 println("${infoMenu}번을 선택하셨습니다")
                 println("정말로 호텔 예약을 종료합니까? 1. 종료 / 2. 처음으로")
-                var endMenu = readLine()!!.toInt()
-                while (true) {
-                    if (endMenu.equals(1)) {
-                        System.err.println("호텔 예약을 종료합니다.")
-                        break // 종료가 된건지 안된건지 모르겠음
-                    } else if (endMenu.equals(2)) {
-                        return main()
+
+            }
+
+            5 -> {
+                println("금액 입금 - 출금 내역입니다. 조회하실 사용자 이름을 입력하세요.")
+                val name = readln()
+                with(customers.find { it.name == name }) {
+                    if (this == null) {
+                        println("입력하신 사용자 이름을 내역에서 찾을 수 없습니다.")
+                    } else {
+                        this.money.printHistory()
                     }
                 }
+            }
+
+            6 -> {
+                println("예약 변경 취소")
+            }
+
+            else -> {
+                println("올바른 메뉴 번호를 입력하세요.")
             }
         }
     }
