@@ -38,8 +38,7 @@ fun main() {
 
         when (infoMenu.toInt()) {
                 1 -> {
-                    println("${infoMenu}번을 선택하셨습니다")
-                    println("호텔 예약을 시작합니다.")
+                    println("${infoMenu}번을 선택하셨습니다. 호텔 예약을 시작합니다.")
 
                     val randomMoney = (500000..1000000).random() // 랜덤 고객 잔액 설정
 
@@ -67,7 +66,7 @@ fun main() {
                         }
                     }
 
-                    // 여기서 현재날짜 불러오고
+                    // 체크인 날짜 지정
                     var checkIn: LocalDate? = null
                     while (true) {
                         println("오늘 날짜는 ${LocalDate.now()} 입니다. 체크인 날짜를 입력해주세요.(yyyyMMdd)")
